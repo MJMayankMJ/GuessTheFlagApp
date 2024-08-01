@@ -61,6 +61,7 @@ struct ContentView: View {
             Button("Continue", action: askQuestion)
         } message: {
              Text("Your Score is ???")
+            // to do
         }
     }
     func fladTapped(_ number: Int) {
