@@ -12,7 +12,11 @@ struct ContentView: View {
     @State private var correctAnswer = Int.random(in: 0...2)
     
     @State private var showingScore = false
+    @State private var showingResult = false
     @State private var scoreTitle = ""
+    @State private var questionNumber = 1
+    @State private var score = 0
+    @State private var currentCountry = 0
     
     var body: some View {
         ZStack{
@@ -37,7 +41,8 @@ struct ContentView: View {
                     }
                     ForEach(0..<3){ number in
                         Button{
-                            fladTapped(number)
+                            flagTapped(number)
+                            currentCountry = number
                         } label : {
                             Image(countries[number])
                                 .clipShape(.rect(cornerRadius: 25))
@@ -50,7 +55,7 @@ struct ContentView: View {
                 .clipShape(.rect(cornerRadius: 25))
                 .shadow(color: .black.opacity(0.01), radius: 25)
                 Spacer()
-                Text("Score: ???")
+                Text("Score : \(score)")
                     .font(.title.bold())
                     .foregroundStyle(Color(red: 0.89, green: 0.89, blue: 0.71))
                 Spacer()
@@ -60,21 +65,41 @@ struct ContentView: View {
         .alert(scoreTitle, isPresented: $showingScore) {
             Button("Continue", action: askQuestion)
         } message: {
-             Text("Your Score is ???")
-            // to do
+            if scoreTitle == "False" {
+                Text("Wrong! That’s the flag of \(countries[currentCountry])")
+            } else {
+                Text("Correct !!!")
+            }
+        }
+        .alert("Game Completed !", isPresented: $showingResult) {
+            Button("Restart", action: askQuestion)
+        } message: {
+            Text("You scored \(score) points")
         }
     }
-    func fladTapped(_ number: Int) {
+    func flagTapped(_ number: Int) {
         if number == correctAnswer {
             scoreTitle = "Correct"
+            score = score + 3
         } else {
             scoreTitle = "False"
+            score = score - 1
         }
-        showingScore = true
+        questionNumber = questionNumber + 1
+        if questionNumber < 9 {
+            showingScore = true
+        } else {
+            showingResult = true
+            questionNumber = 0        }
     }
     func askQuestion () {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        if (questionNumber == 0) {
+            score = 0
+            //why not just below qestionNumber = 0 in else of flagTapped
+            //cz than alert will show score : 0 in final msg result
+        }
     }
 }
 
